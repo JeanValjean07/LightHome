@@ -157,6 +157,13 @@
                 //window.location.href = `https://www.baidu.com/s?wd=${encodeURIComponent(query)}`;
                 //新标签页打开
                 window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(query)}`, '_blank');
+                
+                
+                searchInput.value = '';
+            }else{
+                alert('⚠️ 请输入搜索内容');
+                // 可选：让输入框获得焦点
+                searchInput.focus();
             }
         }
 
