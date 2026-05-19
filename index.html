@@ -18,28 +18,23 @@
            }
 
         body {
+            display: flex;
+            flex-direction: column;  
             background-color: #ffffff;
             width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            padding: 1.5rem;
+            height: 100vh;
         }
 
         .search-container {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             width: 100%;
-            max-width: 680px;
             margin: 0 auto;
-            padding-top: 20vh;  
+            margin-top: -10vh;   /* ！轻微上移使视觉更居中 */
         }
-
         .search-title {
             font-size: 4rem;
             font-weight: 500;
@@ -50,10 +45,8 @@
             line-height: 1.2;
             text-shadow: 0 4px 26px rgba(0,0,0,0.2);
             user-select: none;
-            outline: none;
+            outline: none;      
         }
-
-        /* 搜索框容器 */
         .search-box-wrapper {
             position: relative;
             width: 100%;
@@ -75,7 +68,6 @@
             outline: none;
             color: #111;
         }
-        /* 搜索图标 */
         .search-icon-img {
             position: absolute;
             right: 1.2rem;
@@ -85,12 +77,91 @@
             height: 30px;
             opacity: 1.0;
         }
-
         /* 搜索框聚焦样式 */
         .search-input:focus {
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
         }
+
+        /* top bar */
+        .top-bar {
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 1.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: transparent;
+            box-sizing: border-box;
+            z-index: 10;    
+        }
+        .top-bar-text-button {
+            font-size: 1rem;
+            color: #1a1a1a;
+            text-shadow: 0 4px 26px rgba(0,0,0,0.2);
+            user-select: none;
+            outline: none;
+        }
+        .top-bar-img-button {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+        .top-bar-setting-btn {
+            padding: 5px 10px;
+            background: #4E71F2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        @media (prefers-color-scheme: dark) {
+            .top-bar-text-button {
+                color: #f5f5f7;
+            }  
+        }
+
+        /* bottom bar */
+        .bottom-bar {
+            position: relative;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: transparent;
+            box-sizing: border-box;
+        }
+
+
+
+        /* 设置菜单 */
+        .settingmenu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .settingmenu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .item-label {
+            font-size: 14px;
+            color: #333;
+        }
+
 
 
         /* 特殊屏幕比例 */
@@ -123,6 +194,7 @@
              .search-title {
                 color: #f5f5f7;
              }
+            
              .search-input {
                 border: 3px solid #d0d5dd;
                 background-color: #212121;
@@ -139,12 +211,62 @@
                 filter: invert(1);
             }
         }
-    
+
+        /* 通用弹框遮罩层 */
+        .pop-window-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .pop-window-background {
+            position: fixed;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 350px;
+            min-height: 500px;
+            max-width: 90%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .pop-window-closeBtn {
+            cursor: pointer;
+            font-size: 20px;
+            color: #0f0f0f;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            line-height: 1;
+            font-weight: normal;
+        }
+        @media (prefers-color-scheme: dark) {
+            .pop-window-background {
+                background: #212121;
+             }
+            .pop-window-closeBtn {
+                color: #f5f5f7;
+            }
+        }
 
     </style>
 </head>
 
 <body>
+    <!-- 顶部栏 -->
+    <div class="top-bar">
+        <button class="top-bar-setting-btn" id='openSettings'>设置</button>
+    </div>
+    <!-- 搜索框区 -->
     <div class="search-container">
         <!-- 搜索字样 -->
         <h1 class="search-title">搜索</h1>
@@ -157,12 +279,114 @@
             <img class="search-icon-img" id="searchButton" src="icons/search_icon.svg" alt="发起搜索" title="发起搜索" >
         </div>
     </div>
+    <!-- 底部栏 -->
+    <div class="bottom-bar">
+            <span style="color: #888; font-size: 0.9rem;">啊呀，骇似我力</span>
+    </div>
 
     <script>
 
         const searchInput = document.getElementById('searchInput');
         const searchButton = document.getElementById('searchButton');
         const favicon = document.getElementById('dynamic-favicon');
+
+
+        let setting_openNewPage = localStorage.getItem('setting_openNewPage');
+        let setting_clearInput = localStorage.getItem('setting_clearInput');
+        if (setting_openNewPage == null ) {
+            setting_openNewPage = 'true';
+            localStorage.setItem('setting_openNewPage', 'true');
+        }
+        if (setting_clearInput == null ) {
+            setting_clearInput = 'true';
+            localStorage.setItem('setting_clearInput', 'true');
+        }
+        //设置入口
+        function set_setting_openNewPage(value) {
+            setting_openNewPage = value;
+            localStorage.setItem('setting_openNewPage', value);
+        }
+        function set_setting_clearInput(value) {
+            setting_clearInput = value;
+            localStorage.setItem('setting_clearInput', value);
+        }
+        //打开设置面板
+        let sign_settingPanel_on = false
+        const openSettings = document.getElementById('openSettings');
+        openSettings.addEventListener('click', (e) => openSettingPanel(e.target));
+        function openSettingPanel(button) {
+            //alert('⚠️ 设置');
+            if (sign_settingPanel_on) {
+                return;
+            }
+            sign_settingPanel_on = true;
+            const menu = document.createElement('div');
+            menu.className = 'context-menu';
+            menu.innerHTML = ` 
+                <div class="pop-window-background" >
+                    <div class="settingmenu-header">
+                        <span>设置</span>
+                        <button class="pop-window-closeBtn" id="settingMenu_closeBtn">✕</button>
+                    </div>
+                    <div class="settingmenu-item " data-action="newTab">
+                        <span>在新标签页中打开</span>
+                        <input type="checkbox" id="checkBox_openNewTab" class="settingmenu-checkbox">
+                    </div>
+                    <div class="settingmenu-item " data-action="clearSearch">
+                        <span>发起搜索后清空搜索框</span>
+                        <input type="checkbox" id="checkBox_clearInput" class="settingmenu-checkbox">
+                    </div>
+
+
+                </div>
+            `;
+
+            //设置关闭按钮
+            const closeBtn = menu.querySelector('#settingMenu_closeBtn');
+            closeBtn.addEventListener('click', () => {
+                document.body.removeChild(menu);
+                sign_settingPanel_on = false;
+            });
+
+            //预设复选框
+            const checkBox_openNewTab = menu.querySelector('#checkBox_openNewTab');
+            const checkBox_clearInput = menu.querySelector('#checkBox_clearInput');
+            checkBox_openNewTab.checked = (setting_openNewPage === 'true');
+            checkBox_clearInput.checked = (setting_clearInput === 'true');
+
+            //监听复选框变化
+            checkBox_openNewTab.addEventListener('change', (e) => {
+                set_setting_openNewPage(e.target.checked.toString());
+            });
+            checkBox_clearInput.addEventListener('change', (e) => {
+                set_setting_clearInput(e.target.checked.toString());
+            });
+
+            document.body.appendChild(menu);
+
+        }
+        function positionSettingPanel(popup, button) {
+            const btnRect = button.getBoundingClientRect();
+            const popupRect = popup.getBoundingClientRect();
+            
+            let left = btnRect.right + 10;
+            let top = btnRect.top;
+            
+            if (left + popupRect.width > window.innerWidth) {
+                left = btnRect.left - popupRect.width - 10;
+            }
+            
+            if (top + popupRect.height > window.innerHeight) {
+                top = window.innerHeight - popupRect.height - 10;
+            }
+            
+            if (top < 10) {
+                top = 10;
+            }
+            
+            popup.style.left = left + 'px';
+            popup.style.top = top + 'px';
+        }
 
         function setFaviconByTheme(isDark) {
             if (isDark) {
@@ -192,17 +416,22 @@
                     }
                     window.open(url, '_blank');
                 } else {
-                    //新标签页打开
-                    window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(query)}`, '_blank');
+                    //根据设置选择打开新页面或覆盖
+                    if(setting_openNewPage === 'true'){
+                        //新标签页打开
+                        window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(query)}`, '_blank');
+                    }else{
+                        //覆盖本页
+                        window.location.href = `https://www.baidu.com/s?wd=${encodeURIComponent(query)}`;
+                    }
+                    
                 }
 
-                //覆盖本页
-                //window.location.href = `https://www.baidu.com/s?wd=${encodeURIComponent(query)}`;
-                
-                searchInput.value = '';
+                if(setting_clearInput === 'true'){
+                    searchInput.value = '';
+                }
             }else{
                 alert('⚠️ 请输入搜索内容');
-                // 可选：让输入框获得焦点
                 searchInput.focus();
             }
         }
