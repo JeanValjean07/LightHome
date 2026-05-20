@@ -157,9 +157,38 @@
             cursor: pointer;
             transition: background 0.1s;
         }
+        .settingmenu-item-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
         .item-label {
             font-size: 14px;
             color: #333;
+        }
+        .settingmenu-slogan-input {
+            border: none;
+            border-bottom: 1px solid #ddd;
+            padding: 8px 0;
+            font-size: 14px;
+            outline: none;
+            background: transparent;
+            transition: border-color 0.2s;
+        }
+        .settingmenu-slogan-input:focus {
+            border-bottom-color: #007bff;
+        }
+        .small-button {
+            padding: 4px 8px;
+            font-size: 12px;
+            color: #007bff;
+            background: none;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            cursor: pointer;
         }
 
 
@@ -280,8 +309,9 @@
     </div>
     <!-- 底部栏 -->
     <div class="bottom-bar">
-            <span style="color: #888; font-size: 0.9rem;">啊呀，骇似我力</span>
+            <span style="color: #888; font-size: 0.9rem;" id="slogan">   </span>
     </div>
+
 
     <template id="settingPanelTemplate">
         <div class="context-menu">  
@@ -290,13 +320,20 @@
                 <span>设置</span>
                 <button class="pop-window-closeBtn" id="settingMenu_closeBtn">✕</button>
             </div>
-            <div class="settingmenu-item " data-action="newTab">
+            <div class="settingmenu-item" data-action="newTab">
                 <span>在新标签页中打开</span>
                 <input type="checkbox" id="checkBox_openNewTab" class="settingmenu-checkbox">
             </div>
-            <div class="settingmenu-item " data-action="clearSearch">
+            <div class="settingmenu-item" data-action="clearSearch">
                 <span>发起搜索后清空搜索框</span>
                 <input type="checkbox" id="checkBox_clearInput" class="settingmenu-checkbox">
+            </div>
+            <div class="settingmenu-item">
+                <span>底部 slogan</span>
+                <button class="small-button" id='saveSlogan'>保存</button>
+            </div>
+            <div class="settingmenu-item-vertical">
+                <input type="text" id="slogan-input" class="settingmenu-slogan-input">
             </div>
         </div>
         </div>
@@ -335,7 +372,6 @@
         const openSettings = document.getElementById('openSettings');
         openSettings.addEventListener('click', (e) => openSettingPanel(e.target));
         function openSettingPanel(button) {
-            //alert('⚠️ 设置');
             if (sign_settingPanel_on) {
                 return;
             }
@@ -358,6 +394,17 @@
             const checkBox_clearInput = menu.querySelector('#checkBox_clearInput');
             checkBox_openNewTab.checked = (setting_openNewPage === 'true');
             checkBox_clearInput.checked = (setting_clearInput === 'true');
+
+            
+            const sloganInput = menu.querySelector('#slogan-input');
+            let sloganText = localStorage.getItem('sloganText');
+
+            const saveSloganBtn = menu.querySelector('#saveSlogan');
+            saveSloganBtn.addEventListener('click', () => {
+                saveSlogan();
+            });
+            
+            sloganInput.value = sloganText;
 
             //监听复选框变化
             checkBox_openNewTab.addEventListener('change', (e) => {
@@ -403,6 +450,12 @@
             
             popup.style.left = left + 'px';
             popup.style.top = top + 'px';
+        }
+        function saveSlogan(){
+            const sloganInput = document.getElementById('slogan-input');
+            const sloganText = sloganInput.value.trim();
+            localStorage.setItem('sloganText', sloganText);
+            document.getElementById('slogan').textContent = sloganText;
         }
 
         function setFaviconByTheme(isDark) {
@@ -453,16 +506,28 @@
             }
         }
 
+        //底部slogan
+        const sloganDisplay = document.getElementById('slogan');
+        let sloganText = localStorage.getItem('sloganText');
+        if (sloganText == null) {
+            localStorage.setItem('sloganText', '啊呀，骇似我力');
+            sloganText = '啊呀，骇似我力';
+        }
+        sloganDisplay.textContent = sloganText;
+        
+
+        
+
+
         //点击搜索图标发起搜索
         document.getElementById('searchButton').addEventListener('click', performSearch);
-    
 
 
         //页面全局监听回车键,已有输入内容立即发起搜索
         document.addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
             if (sign_settingPanel_on) {
-                
+                saveSlogan();
                 closeSettingPanel();
             
             } else if (searchInput.value.trim() !== '') {
