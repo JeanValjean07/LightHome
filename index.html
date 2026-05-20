@@ -270,7 +270,6 @@
     <div class="search-container">
         <!-- 搜索字样 -->
         <h1 class="search-title">搜索</h1>
-        
         <!-- 搜索框 -->
         <div class="search-box-wrapper">
             <input class="search-input" id="searchInput" type="text" placeholder="" 
@@ -283,6 +282,27 @@
     <div class="bottom-bar">
             <span style="color: #888; font-size: 0.9rem;">啊呀，骇似我力</span>
     </div>
+
+    <template id="settingPanelTemplate">
+        <div class="context-menu">  
+             <div class="pop-window-background" >
+            <div class="settingmenu-header">
+                <span>设置</span>
+                <button class="pop-window-closeBtn" id="settingMenu_closeBtn">✕</button>
+            </div>
+            <div class="settingmenu-item " data-action="newTab">
+                <span>在新标签页中打开</span>
+                <input type="checkbox" id="checkBox_openNewTab" class="settingmenu-checkbox">
+            </div>
+            <div class="settingmenu-item " data-action="clearSearch">
+                <span>发起搜索后清空搜索框</span>
+                <input type="checkbox" id="checkBox_clearInput" class="settingmenu-checkbox">
+            </div>
+        </div>
+        </div>
+        
+    </template>
+
 
     <script>
 
@@ -320,32 +340,17 @@
                 return;
             }
             sign_settingPanel_on = true;
-            const menu = document.createElement('div');
+            
+            const template = document.getElementById('settingPanelTemplate');
+            const menu = template.content.cloneNode(true).firstElementChild;
+        
             menu.className = 'context-menu';
-            menu.innerHTML = ` 
-                <div class="pop-window-background" >
-                    <div class="settingmenu-header">
-                        <span>设置</span>
-                        <button class="pop-window-closeBtn" id="settingMenu_closeBtn">✕</button>
-                    </div>
-                    <div class="settingmenu-item " data-action="newTab">
-                        <span>在新标签页中打开</span>
-                        <input type="checkbox" id="checkBox_openNewTab" class="settingmenu-checkbox">
-                    </div>
-                    <div class="settingmenu-item " data-action="clearSearch">
-                        <span>发起搜索后清空搜索框</span>
-                        <input type="checkbox" id="checkBox_clearInput" class="settingmenu-checkbox">
-                    </div>
-
-
-                </div>
-            `;
+            
 
             //设置关闭按钮
             const closeBtn = menu.querySelector('#settingMenu_closeBtn');
             closeBtn.addEventListener('click', () => {
-                document.body.removeChild(menu);
-                sign_settingPanel_on = false;
+                closeSettingPanel();
             });
 
             //预设复选框
@@ -364,6 +369,18 @@
 
             document.body.appendChild(menu);
 
+            if (button && button.blur) {
+                button.blur();
+            }
+            menu.focus();
+
+        }
+        function closeSettingPanel() {
+            const menu = document.querySelector('.context-menu');
+            if (menu) {
+                document.body.removeChild(menu);
+                sign_settingPanel_on = false;
+            }
         }
         function positionSettingPanel(popup, button) {
             const btnRect = button.getBoundingClientRect();
@@ -440,10 +457,15 @@
         document.getElementById('searchButton').addEventListener('click', performSearch);
     
 
+
         //页面全局监听回车键,已有输入内容立即发起搜索
         document.addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
-            if (searchInput.value.trim() !== '') {
+            if (sign_settingPanel_on) {
+                
+                closeSettingPanel();
+            
+            } else if (searchInput.value.trim() !== '') {
                 event.preventDefault();
                 performSearch();
             }
