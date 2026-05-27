@@ -17,6 +17,7 @@
             box-sizing: border-box;   
            }
 
+
         body {
             display: flex;
             flex-direction: column;  
@@ -24,6 +25,12 @@
             width: 100%;
             height: 100dvh;
         }
+        @media (prefers-color-scheme: dark) {
+             body {
+                background-color: #1a1a1a;
+             }
+        }
+
 
         .search-container {
             flex: 1;
@@ -36,14 +43,13 @@
             margin-top: -10vh;   /* ！轻微上移使视觉更居中 */
         }
         .search-title {
-            font-size: 4rem;
+            font-size: 6rem;
             font-weight: 500;
             letter-spacing: 0.04em;
             color: #1a1a1a;
             text-align: center;
             margin-bottom: 2rem;
             line-height: 1.2;
-            text-shadow: 0 4px 26px rgba(0,0,0,0.2);
             user-select: none;
             outline: none;      
         }
@@ -54,19 +60,21 @@
             margin: 0 auto;
             user-select: none;
         }
-        /* 搜索框 */
         .search-input {
             display: block;
             width: 100%;
-            padding: 1rem 4rem 1rem 1rem  !important; 
+            padding: 1rem 4rem 1rem 1rem !important;
             font-size: 1.2rem;
-            background-color: #ffffff;
-            border: 3px solid #1a1a1a;
-            border-radius: 20px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.02);
+            border: none !important;
+            border-bottom: 2px solid #1a1a1a !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
             transition: all 0.2s ease;
-            outline: none;
-            color: #111;
+            outline: none !important;
+            color: #1a1a1a;
+        }
+        .search-input:focus {
+            border-bottom: 2px solid #3b82f6 !important;;
         }
         .search-icon-img {
             position: absolute;
@@ -77,13 +85,27 @@
             height: 30px;
             opacity: 1.0;
         }
-        /* 搜索框聚焦样式 */
-        .search-input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
-        }
+        @media (prefers-color-scheme: dark) {
+             .search-title {
+                color: #f5f5f7;
+             }
+             .search-input {
+                background-color: transparent !important;
+                border-bottom: 2px solid #fafafa !important;
+                color: #f5f5f7;
+             }
+             .search-icon-img {
+                filter: invert(0);
+             }
 
-        /* top bar */
+        }
+        @media (prefers-color-scheme: light) {
+            .search-icon-img {
+                filter: invert(1);
+            }
+        }
+        
+
         .top-bar {
             position: relative;
             width: 100%;
@@ -122,8 +144,9 @@
                 color: #f5f5f7;
             }  
         }
+        
 
-        /* bottom bar */
+
         .bottom-bar {
             position: relative;
             bottom: 0;
@@ -139,8 +162,6 @@
         }
 
 
-
-        /* 设置菜单 */
         .settingmenu-header {
             display: flex;
             justify-content: space-between;
@@ -193,55 +214,7 @@
 
 
 
-        /* 特殊屏幕比例 */
-        @media (max-width: 560px) {
-            .search-title {
-                font-size: 3.8rem;           /* 手机屏幕依然够大 */
-                margin-bottom: 1.5rem;
-            }
-            .search-input {
-                padding: 0.9rem 1.2rem;
-                font-size: 1rem;
-            }
-        }
-        @media (min-width: 1400px) {
-            .search-input {
-                padding: 1.2rem 2rem;
-                font-size: 1.3rem;
-            }
-            .search-title {
-                font-size: 6rem;
-                margin-bottom: 2.2rem;
-            }
-        }
-
-        /* 深色模式样式覆盖 */
-        @media (prefers-color-scheme: dark) {
-             body {
-                background-color: #1a1a1a;
-             }
-             .search-title {
-                color: #f5f5f7;
-             }
-            
-             .search-input {
-                border: 3px solid #d0d5dd;
-                background-color: #212121;
-                color: #ffffff;
-                caret-color: #ffffff;
-             }
-             .search-icon-img {
-                filter: invert(0);
-            }
-        }
-
-        @media (prefers-color-scheme: light) {
-            .search-icon-img {
-                filter: invert(1);
-            }
-        }
-
-        /* 通用弹框遮罩层 */
+        
         .pop-window-overlay {
             position: fixed;
             top: 0;
@@ -302,8 +275,7 @@
         <!-- 搜索框 -->
         <div class="search-box-wrapper">
             <input class="search-input" id="searchInput" type="text" placeholder="" 
-            autocomplete="off" spellcheck="false" autocorrect="off" 
-            style="padding: 1rem 4rem 1rem 1.5rem !important;" ">
+            autocomplete="off" spellcheck="false" autocorrect="off" >
             <img class="search-icon-img" id="searchButton" src="icons/search_icon.svg" alt="发起搜索" title="发起搜索" >
         </div>
     </div>
@@ -354,10 +326,12 @@
 
 
     <script>
-
+        //常用控件获取
+        const searchTitle = document.getElementById('searchTitle');
         const searchInput = document.getElementById('searchInput');
         const searchButton = document.getElementById('searchButton');
         const favicon = document.getElementById('dynamic-favicon');
+
 
         //加载设置项
         let setting_openNewPage = localStorage.getItem('setting_openNewPage');
@@ -370,7 +344,98 @@
             setting_clearInput = 'true';
             localStorage.setItem('setting_clearInput', 'true');
         }
-        //注册设置入口函数
+        
+
+    
+        
+        //设置面板
+        const openSettings = document.getElementById('openSettings');
+        openSettings.addEventListener('click', (e) => open_SettingPanel(e.target));
+        let sign_settingPanel_on = false;  //设置面板开启状态标志
+        function open_SettingPanel(button) {
+            //
+            if (sign_settingPanel_on) {
+                return;
+            }
+            sign_settingPanel_on = true;
+            
+            //
+            const template = document.getElementById('settingPanelTemplate');
+            const menu = template.content.cloneNode(true).firstElementChild;
+            menu.className = 'context-menu';
+            
+
+            //注册面板内控件 - 关闭键
+            const closeBtn = menu.querySelector('#settingMenu_closeBtn');
+            closeBtn.addEventListener('click', () => {
+                shut_SettingPanel();
+            });
+
+            //注册面板控件 - 复选框
+            const checkBox_openNewTab = menu.querySelector('#checkBox_openNewTab');
+            const checkBox_clearInput = menu.querySelector('#checkBox_clearInput');
+            checkBox_openNewTab.checked = (setting_openNewPage === 'true');
+            checkBox_clearInput.checked = (setting_clearInput === 'true');
+            checkBox_openNewTab.addEventListener('change', (e) => {
+                set_setting_openNewPage(e.target.checked.toString());
+            });
+            checkBox_clearInput.addEventListener('change', (e) => {
+                set_setting_clearInput(e.target.checked.toString());
+            });
+
+            //注册面板控件 - slogan输入框
+            const sloganInput = menu.querySelector('#slogan-input');
+            let sloganText = localStorage.getItem('sloganText');
+            const saveSloganBtn = menu.querySelector('#saveSlogan');
+            saveSloganBtn.addEventListener('click', () => {
+                settingPanel_saveSlogan();
+            });
+            sloganInput.value = sloganText;
+            
+            //注册面板控件 - searchTitle输入框
+            const searchTitleInput = menu.querySelector('#searchTitle-input');
+            let searchTitleText = localStorage.getItem('searchTitleText');
+            const saveSearchTitleBtn = menu.querySelector('#saveSearchTitle');
+            saveSearchTitleBtn.addEventListener('click', () => {
+                settingPanel_saveSearchTitle();
+            });
+            searchTitleInput.value = searchTitleText;
+            
+            
+
+            //END
+            //添加到组件树并丢掉按钮焦点
+            document.body.appendChild(menu);
+            if (button && button.blur) {
+                button.blur();
+            }
+            menu.focus();
+
+        }
+        function shut_SettingPanel() {
+            const menu = document.querySelector('.context-menu');
+            if (menu) {
+                document.body.removeChild(menu);
+                sign_settingPanel_on = false;
+            }
+        }   
+        function pin_SettingPanel(){
+            //移动面板位置
+            //todo
+        }
+        //设置接口函数
+        function settingPanel_saveSlogan(){
+            const sloganInput = document.getElementById('slogan-input');
+            const sloganText = sloganInput.value.trim();
+            localStorage.setItem('sloganText', sloganText);
+            updateBottomSlogan(sloganText);
+        }
+        function settingPanel_saveSearchTitle(){
+            const searchTitleInput = document.getElementById('searchTitle-input');
+            const searchTitleText = searchTitleInput.value.trim();
+            localStorage.setItem('searchTitleText', searchTitleText);
+            updateMainTitle(searchTitleText);
+        }
         function set_setting_openNewPage(value) {
             setting_openNewPage = value;
             localStorage.setItem('setting_openNewPage', value);
@@ -379,146 +444,76 @@
             setting_clearInput = value;
             localStorage.setItem('setting_clearInput', value);
         }
-        //打开设置面板
-        let sign_settingPanel_on = false
-        const openSettings = document.getElementById('openSettings');
-        openSettings.addEventListener('click', (e) => openSettingPanel(e.target));
-        function openSettingPanel(button) {
-            if (sign_settingPanel_on) {
-                return;
-            }
-            sign_settingPanel_on = true;
-            
-            const template = document.getElementById('settingPanelTemplate');
-            const menu = template.content.cloneNode(true).firstElementChild;
         
-            menu.className = 'context-menu';
-            
+        
 
-            //设置关闭按钮
-            const closeBtn = menu.querySelector('#settingMenu_closeBtn');
-            closeBtn.addEventListener('click', () => {
-                closeSettingPanel();
+        
+        //注册动态切换图标
+        registerDynamicFavicon();
+        function registerDynamicFavicon() {
+            const favicon = document.getElementById('dynamic-favicon');
+            function setFaviconByTheme(isDark) {
+                if (isDark) {
+                    favicon.href = 'icons/favicon_light.svg';
+                } else {
+                    favicon.href = 'icons/favicon_dark.svg';
+                }
+            }
+            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            setFaviconByTheme(darkModeMediaQuery.matches);
+            darkModeMediaQuery.addEventListener('change', (e) => {
+                setFaviconByTheme(e.matches);
             });
 
-            //预设复选框
-            const checkBox_openNewTab = menu.querySelector('#checkBox_openNewTab');
-            const checkBox_clearInput = menu.querySelector('#checkBox_clearInput');
-            checkBox_openNewTab.checked = (setting_openNewPage === 'true');
-            checkBox_clearInput.checked = (setting_clearInput === 'true');
+        }
 
-            const sloganInput = menu.querySelector('#slogan-input');
-            let sloganText = localStorage.getItem('sloganText');
-            const saveSloganBtn = menu.querySelector('#saveSlogan');
-            saveSloganBtn.addEventListener('click', () => {
-                saveSlogan();
-            });
-            sloganInput.value = sloganText;
-            
-            const searchTitleInput = menu.querySelector('#searchTitle-input');
+
+        //注册首页大标题
+        initMainTitle();
+        function initMainTitle() {
+            const searchTitle = document.getElementById('searchTitle');
             let searchTitleText = localStorage.getItem('searchTitleText');
-            const saveSearchTitleBtn = menu.querySelector('#saveSearchTitle');
-            saveSearchTitleBtn.addEventListener('click', () => {
-                saveSearchTitle();
-            });
-            searchTitleInput.value = searchTitleText;
-            
             if (searchTitleText == null) {
                 localStorage.setItem('searchTitleText', '搜索');
                 searchTitleText = '搜索';
             }
+            searchTitle.textContent = searchTitleText;
+        }
+        function updateMainTitle(newTitle) {
+            searchTitle.textContent = newTitle;
+            localStorage.setItem('searchTitleText', newTitle);
+        }
+        function updateMainTitle(){
+            let searchTitleText = localStorage.getItem('searchTitleText');
+            searchTitle.textContent = searchTitleText;
+        }
 
-
-
-
-
-
-
-            
-
-            //监听复选框变化
-            checkBox_openNewTab.addEventListener('change', (e) => {
-                set_setting_openNewPage(e.target.checked.toString());
-            });
-            checkBox_clearInput.addEventListener('change', (e) => {
-                set_setting_clearInput(e.target.checked.toString());
-            });
-
-            document.body.appendChild(menu);
-
-            if (button && button.blur) {
-                button.blur();
+        //注册底部Slogan
+        initBottomSlogan();
+        function initBottomSlogan() {
+            const sloganDisplay = document.getElementById('slogan');
+            let sloganText = localStorage.getItem('sloganText');
+            if (sloganText == null) {
+                localStorage.setItem('sloganText', '啊呀，骇似我力');
+                sloganText = '啊呀，骇似我力';
             }
-            menu.focus();
-
+            sloganDisplay.textContent = sloganText;
         }
-        function closeSettingPanel() {
-            const menu = document.querySelector('.context-menu');
-            if (menu) {
-                document.body.removeChild(menu);
-                sign_settingPanel_on = false;
-            }
+        function updateBottomSlogan(newSlogan) {
+            const sloganDisplay = document.getElementById('slogan');
+            sloganDisplay.textContent = newSlogan;
+            localStorage.setItem('sloganText', newSlogan);
         }
-        function positionSettingPanel(popup, button) {
-            const btnRect = button.getBoundingClientRect();
-            const popupRect = popup.getBoundingClientRect();
-            
-            let left = btnRect.right + 10;
-            let top = btnRect.top;
-            
-            if (left + popupRect.width > window.innerWidth) {
-                left = btnRect.left - popupRect.width - 10;
-            }
-            
-            if (top + popupRect.height > window.innerHeight) {
-                top = window.innerHeight - popupRect.height - 10;
-            }
-            
-            if (top < 10) {
-                top = 10;
-            }
-            
-            popup.style.left = left + 'px';
-            popup.style.top = top + 'px';
+        function updateBottomSlogan() {
+            const sloganDisplay = document.getElementById('slogan');
+            let sloganText = localStorage.getItem('sloganText');
+            sloganDisplay.textContent = sloganText;
         }
-        function saveSlogan(){
-            const sloganInput = document.getElementById('slogan-input');
-            const sloganText = sloganInput.value.trim();
-            localStorage.setItem('sloganText', sloganText);
-            document.getElementById('slogan').textContent = sloganText;
-        }
-        function saveSearchTitle(){
-            const searchTitleInput = document.getElementById('searchTitle-input');
-            const searchTitleText = searchTitleInput.value.trim();
-            localStorage.setItem('searchTitleText', searchTitleText);
-            document.getElementById('searchTitle').textContent = searchTitleText;
-        }
-        //注册动态切换图标
-        function setFaviconByTheme(isDark) {
-            if (isDark) {
-                favicon.href = 'icons/favicon_light.svg';
-            } else {
-                favicon.href = 'icons/favicon_dark.svg';
-            }
-        }
-        const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        setFaviconByTheme(darkModeMediaQuery.matches);
-        darkModeMediaQuery.addEventListener('change', (e) => {
-            setFaviconByTheme(e.matches);
-        });
-
-        //首页文字
-        const searchTitle = document.getElementById('searchTitle');
-        let searchTitleText = localStorage.getItem('searchTitleText');
-        if (searchTitleText == null) {
-            localStorage.setItem('searchTitleText', '搜索');
-            searchTitleText = '搜索';
-        }
-        searchTitle.textContent = searchTitleText;
 
 
 
-        //搜索相关
+        
+        //搜索主函数
         function performSearch() {
             const query = searchInput.value.trim();
             if (query) {
@@ -551,39 +546,34 @@
                 searchInput.focus();
             }
         }
-
-        //底部slogan
-        const sloganDisplay = document.getElementById('slogan');
-        let sloganText = localStorage.getItem('sloganText');
-        if (sloganText == null) {
-            localStorage.setItem('sloganText', '啊呀，骇似我力');
-            sloganText = '啊呀，骇似我力';
+        
+        //注册搜索控件行为
+        initSearchAction();
+        function initSearchAction() {
+            //点击搜索图标发起搜索
+            document.getElementById('searchButton').addEventListener('click', performSearch);
         }
-        sloganDisplay.textContent = sloganText;
         
-
-        
-
-
-        //点击搜索图标发起搜索
-        document.getElementById('searchButton').addEventListener('click', performSearch);
-
-
-        //页面全局监听回车键,已有输入内容立即发起搜索
-        document.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            if (sign_settingPanel_on) {
-                saveSlogan();
-                closeSettingPanel();
-            
-            } else if (searchInput.value.trim() !== '') {
-                event.preventDefault();
-                performSearch();
-            }
+        //注册全局快捷键行为
+        initKeyActions();
+        function initKeyActions() {
+            //页面全局监听回车键,已有输入内容立即发起搜索
+            document.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    if (sign_settingPanel_on) {
+                        settingPanel_saveSlogan();
+                        settingPanel_saveSearchTitle();
+                        updateBottomSlogan();
+                        updateMainTitle();
+                        shut_SettingPanel();
+                    } else if (searchInput.value.trim() !== '') {
+                        event.preventDefault();
+                        performSearch();
+                    }
+                }
+            });
         }
 
-
-    });
     </script>
     
 </body>
