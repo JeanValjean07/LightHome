@@ -146,7 +146,6 @@
         }
         
 
-
         .bottom-bar {
             position: relative;
             bottom: 0;
@@ -185,34 +184,66 @@
             padding: 12px 16px;
             cursor: pointer;
             transition: background 0.1s;
+            user-select: none;
         }
-        .item-label {
-            font-size: 14px;
-            color: #333;
+        .settingmenu-item-with-input {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px 1px 16px;
+            cursor: pointer;
+            transition: background 0.1s;
         }
-        .settingmenu-slogan-input {
+        .settingmenu-item-vertical-input {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 1px 16px 10px 16px;
+            cursor: pointer;
+            transition: background 0.1s;
+            user-select: none;
+        }
+        .settingmenu-input {
             border: none;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #212121;
             padding: 8px 0;
             font-size: 14px;
             outline: none;
             background: transparent;
             transition: border-color 0.2s;
         }
-        .settingmenu-slogan-input:focus {
-            border-bottom-color: #007bff;
+        .settingmenu-input:focus {
+            border-bottom-color: #9575cd;
         }
-        .small-button {
-            padding: 4px 8px;
+        .settingmenu-button-small {
+            padding: 3px 12px;
             font-size: 12px;
-            color: #007bff;
-            background: none;
-            border: 1px solid #007bff;
+            color: #1a1a1a;
+            background-color: #d1c4e9;
+            border: 1px solid #d1c4e9;
             border-radius: 4px;
             cursor: pointer;
+            user-select: none;
         }
+        .settingmenu-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #d1c4e9;
+            cursor: pointer;
+            border-radius: 4px;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+            transition: all 0.15s ease;
+        }
+        .settingmenu-checkbox:hover {
+            filter: drop-shadow(0 2px 4px rgba(149, 117, 205, 0.3));
+            transform: scale(1.05);
+        }
+        @media (prefers-color-scheme: dark) {
+            .settingmenu-input {
+                border-bottom: 1px solid #fafafa;
+            }
 
-
+        }
 
         
         .pop-window-overlay {
@@ -250,6 +281,7 @@
             height: 24px;
             line-height: 1;
             font-weight: normal;
+            user-select: none;
         }
         @media (prefers-color-scheme: dark) {
             .pop-window-background {
@@ -288,35 +320,46 @@
     <!-- 设置面板弹窗 -->
     <template id="settingPanelTemplate">
         <div class="context-menu">  
-             <div class="pop-window-background" >
+            <div class="pop-window-background" >
+
             <div class="settingmenu-header">
                 <span>设置</span>
                 <button class="pop-window-closeBtn" id="settingMenu_closeBtn">✕</button>
             </div>
-            <div class="settingmenu-item" data-action="newTab">
+
+            <div class="settingmenu-item" data-action="setting_action_openNewTab">
                 <span>在新标签页中打开</span>
                 <input type="checkbox" id="checkBox_openNewTab" class="settingmenu-checkbox">
             </div>
-            <div class="settingmenu-item" data-action="clearSearch">
+
+            <div class="settingmenu-item" data-action="setting_action_clearSearch">
                 <span>发起搜索后清空搜索框</span>
                 <input type="checkbox" id="checkBox_clearInput" class="settingmenu-checkbox">
             </div>
+
+            <div class="settingmenu-item" data-action="setting_action_dynamicFavicon">
+                <span>使用动态变色的网页图标</span>
+                <input type="checkbox" id="checkBox_dynamicFavicon" class="settingmenu-checkbox">
+            </div>
+
             <!-- 底部slogan -->
-            <div class="settingmenu-item">
+            <div class="settingmenu-item-with-input">
                 <span>底部 slogan</span>
-                <button class="small-button" id='saveSlogan'>保存</button>
+                <button class="settingmenu-button-small" id='saveSlogan'>保存</button>
             </div>
-            <div class="settingmenu-item-vertical">
-                <input type="text" id="slogan-input" class="settingmenu-slogan-input">
+            <div class="settingmenu-item-vertical-input">
+                <input type="text" id="slogan-input" class="settingmenu-input">
             </div>
+
             <!-- 搜索字样 -->
-            <div class="settingmenu-item">
+            <div class="settingmenu-item-with-input">
                 <span>搜索字样</span>
-                <button class="small-button" id='saveSearchTitle'>保存</button>
+                <button class="settingmenu-button-small" id='saveSearchTitle'>保存</button>
             </div>
-            <div class="settingmenu-item-vertical">
-                <input type="text" id="searchTitle-input" class="settingmenu-slogan-input">
+            <div class="settingmenu-item-vertical-input">
+                <input type="text" id="searchTitle-input" class="settingmenu-input">
             </div>
+
         </div>
         </div>
         
@@ -336,6 +379,7 @@
         //加载设置项
         let setting_openNewPage = localStorage.getItem('setting_openNewPage');
         let setting_clearInput = localStorage.getItem('setting_clearInput');
+        let setting_dynamicFavicon = localStorage.getItem('setting_dynamicFavicon');
         if (setting_openNewPage == null ) {
             setting_openNewPage = 'true';
             localStorage.setItem('setting_openNewPage', 'true');
@@ -344,7 +388,10 @@
             setting_clearInput = 'true';
             localStorage.setItem('setting_clearInput', 'true');
         }
-        
+        if (setting_dynamicFavicon == null ) {
+            setting_dynamicFavicon = 'false';
+            localStorage.setItem('setting_dynamicFavicon', 'false');
+        }
 
     
         
@@ -374,15 +421,19 @@
             //注册面板控件 - 复选框
             const checkBox_openNewTab = menu.querySelector('#checkBox_openNewTab');
             const checkBox_clearInput = menu.querySelector('#checkBox_clearInput');
+            const checkBox_dynamicFavicon = menu.querySelector('#checkBox_dynamicFavicon');
             checkBox_openNewTab.checked = (setting_openNewPage === 'true');
             checkBox_clearInput.checked = (setting_clearInput === 'true');
+            checkBox_dynamicFavicon.checked = (setting_dynamicFavicon === 'true');
             checkBox_openNewTab.addEventListener('change', (e) => {
                 set_setting_openNewPage(e.target.checked.toString());
             });
             checkBox_clearInput.addEventListener('change', (e) => {
                 set_setting_clearInput(e.target.checked.toString());
             });
-
+            checkBox_dynamicFavicon.addEventListener('change', (e) => {
+                set_setting_dynamicFavicon(e.target.checked.toString());
+            });
             //注册面板控件 - slogan输入框
             const sloganInput = menu.querySelector('#slogan-input');
             let sloganText = localStorage.getItem('sloganText');
@@ -444,12 +495,21 @@
             setting_clearInput = value;
             localStorage.setItem('setting_clearInput', value);
         }
-        
-        
+        function set_setting_dynamicFavicon(value) {
+            setting_dynamicFavicon = value;
+            localStorage.setItem('setting_dynamicFavicon', value);
+        }
 
         
         //注册动态切换图标
-        registerDynamicFavicon();
+        if (setting_dynamicFavicon === 'true') {
+            registerDynamicFavicon();
+        } else {
+            useSimpleGreyFavicon();
+        }
+        function useSimpleGreyFavicon() {
+            favicon.href = 'icons/favicon_grey.svg';
+        }
         function registerDynamicFavicon() {
             const favicon = document.getElementById('dynamic-favicon');
             function setFaviconByTheme(isDark) {
