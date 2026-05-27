@@ -298,7 +298,7 @@
     <!-- 搜索框区 -->
     <div class="search-container">
         <!-- 搜索字样 -->
-        <h1 class="search-title">搜索</h1>
+        <h1 class="search-title" id="searchTitle">  </h1>
         <!-- 搜索框 -->
         <div class="search-box-wrapper">
             <input class="search-input" id="searchInput" type="text" placeholder="" 
@@ -313,6 +313,7 @@
     </div>
 
 
+    <!-- 设置面板弹窗 -->
     <template id="settingPanelTemplate">
         <div class="context-menu">  
              <div class="pop-window-background" >
@@ -328,6 +329,7 @@
                 <span>发起搜索后清空搜索框</span>
                 <input type="checkbox" id="checkBox_clearInput" class="settingmenu-checkbox">
             </div>
+            <!-- 底部slogan -->
             <div class="settingmenu-item">
                 <span>底部 slogan</span>
                 <button class="small-button" id='saveSlogan'>保存</button>
@@ -335,10 +337,20 @@
             <div class="settingmenu-item-vertical">
                 <input type="text" id="slogan-input" class="settingmenu-slogan-input">
             </div>
+            <!-- 搜索字样 -->
+            <div class="settingmenu-item">
+                <span>搜索字样</span>
+                <button class="small-button" id='saveSearchTitle'>保存</button>
+            </div>
+            <div class="settingmenu-item-vertical">
+                <input type="text" id="searchTitle-input" class="settingmenu-slogan-input">
+            </div>
         </div>
         </div>
         
     </template>
+
+
 
 
     <script>
@@ -347,7 +359,7 @@
         const searchButton = document.getElementById('searchButton');
         const favicon = document.getElementById('dynamic-favicon');
 
-
+        //加载设置项
         let setting_openNewPage = localStorage.getItem('setting_openNewPage');
         let setting_clearInput = localStorage.getItem('setting_clearInput');
         if (setting_openNewPage == null ) {
@@ -358,7 +370,7 @@
             setting_clearInput = 'true';
             localStorage.setItem('setting_clearInput', 'true');
         }
-        //设置入口
+        //注册设置入口函数
         function set_setting_openNewPage(value) {
             setting_openNewPage = value;
             localStorage.setItem('setting_openNewPage', value);
@@ -395,16 +407,34 @@
             checkBox_openNewTab.checked = (setting_openNewPage === 'true');
             checkBox_clearInput.checked = (setting_clearInput === 'true');
 
-            
             const sloganInput = menu.querySelector('#slogan-input');
             let sloganText = localStorage.getItem('sloganText');
-
             const saveSloganBtn = menu.querySelector('#saveSlogan');
             saveSloganBtn.addEventListener('click', () => {
                 saveSlogan();
             });
-            
             sloganInput.value = sloganText;
+            
+            const searchTitleInput = menu.querySelector('#searchTitle-input');
+            let searchTitleText = localStorage.getItem('searchTitleText');
+            const saveSearchTitleBtn = menu.querySelector('#saveSearchTitle');
+            saveSearchTitleBtn.addEventListener('click', () => {
+                saveSearchTitle();
+            });
+            searchTitleInput.value = searchTitleText;
+            
+            if (searchTitleText == null) {
+                localStorage.setItem('searchTitleText', '搜索');
+                searchTitleText = '搜索';
+            }
+
+
+
+
+
+
+
+            
 
             //监听复选框变化
             checkBox_openNewTab.addEventListener('change', (e) => {
@@ -457,7 +487,13 @@
             localStorage.setItem('sloganText', sloganText);
             document.getElementById('slogan').textContent = sloganText;
         }
-
+        function saveSearchTitle(){
+            const searchTitleInput = document.getElementById('searchTitle-input');
+            const searchTitleText = searchTitleInput.value.trim();
+            localStorage.setItem('searchTitleText', searchTitleText);
+            document.getElementById('searchTitle').textContent = searchTitleText;
+        }
+        //注册动态切换图标
         function setFaviconByTheme(isDark) {
             if (isDark) {
                 favicon.href = 'icons/favicon_light.svg';
@@ -471,8 +507,18 @@
             setFaviconByTheme(e.matches);
         });
 
+        //首页文字
+        const searchTitle = document.getElementById('searchTitle');
+        let searchTitleText = localStorage.getItem('searchTitleText');
+        if (searchTitleText == null) {
+            localStorage.setItem('searchTitleText', '搜索');
+            searchTitleText = '搜索';
+        }
+        searchTitle.textContent = searchTitleText;
 
-        
+
+
+        //搜索相关
         function performSearch() {
             const query = searchInput.value.trim();
             if (query) {
