@@ -21,14 +21,14 @@
         body {
             display: flex;
             flex-direction: column;  
-            background-color: #ffffff;
+            background-color: #ffffff !important;
             width: 100%;
             height: 100dvh;
         }
         @media (prefers-color-scheme: dark) {
              body {
-                background-color: #1a1a1a;
-             }
+                background-color: #111111 !important;
+             } 
         }
 
 
@@ -72,9 +72,10 @@
             transition: all 0.2s ease;
             outline: none !important;
             color: #1a1a1a;
+            background-color: transparent !important;
         }
         .search-input:focus {
-            border-bottom: 2px solid #3b82f6 !important;;
+            border-bottom: 2px solid #d1c4e9 !important;;
         }
         .search-icon-img {
             position: absolute;
@@ -90,9 +91,9 @@
                 color: #f5f5f7;
              }
              .search-input {
-                background-color: transparent !important;
                 border-bottom: 2px solid #fafafa !important;
                 color: #f5f5f7;
+                background-color: transparent !important;
              }
              .search-icon-img {
                 filter: invert(0);
@@ -132,12 +133,11 @@
         }
         .top-bar-setting-btn {
             padding: 5px 10px;
-            background: #4E71F2;
-            color: white;
-            border: none;
+            color: black;
+            background-color: #d1c4e9;
+            border: 1px solid #d1c4e9;
             border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         @media (prefers-color-scheme: dark) {
             .top-bar-text-button {
@@ -186,6 +186,48 @@
             transition: background 0.1s;
             user-select: none;
         }
+
+        .settingmenu-item-columns-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            padding: 10px 16px;
+            transition: background 0.1s;
+        }
+        .settingmenu-item-inner-column-1 {
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+            padding: 5px 0px 1px 0px;
+            transition: background 0.1s;
+        }
+        .settingmenu-item-inner-column-2 {
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+            padding: 1px 0px 1px 0px;
+            transition: background 0.1s;
+        }
+        .settingmenu-item-inner-column-3 {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;
+            flex-direction: row;
+            padding: 1px 0px 5px 0px;
+            transition: background 0.1s;
+        }
+        .settingmenu-item-special-for-slider {
+            display: flex;
+            width: 100%;
+            gap: 8px;
+            align-items: center;
+            justify-content: space-between;
+            flex-direction: row;
+            padding: 5px 0px 5px 0px;
+            transition: background 0.1s;
+        }
+
         .settingmenu-item-with-input {
             display: flex;
             justify-content: space-between;
@@ -203,9 +245,11 @@
             transition: background 0.1s;
             user-select: none;
         }
+
         .settingmenu-input {
             border: none;
             border-bottom: 1px solid #212121;
+            flex:1;
             padding: 8px 0;
             font-size: 14px;
             outline: none;
@@ -233,6 +277,28 @@
             border-radius: 4px;
             filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
             transition: all 0.15s ease;
+        }
+        .settingmenu-slider {
+            appearance: initial;
+            -webkit-appearance: none;
+            width: 300px;
+            height: 2px;
+            background: #d1c4e9;
+            border-radius: 2px;
+            outline: none;
+        }
+        .settingmenu-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #c2a9f0;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .settingmenu-slider::-webkit-slider-thumb:hover {
+            background: #ac8aeb;
+            transform: scale(1.15);
         }
         .settingmenu-checkbox:hover {
             filter: drop-shadow(0 2px 4px rgba(149, 117, 205, 0.3));
@@ -352,13 +418,22 @@
             </div>
 
             <!-- 搜索字样 -->
-            <div class="settingmenu-item-with-input">
-                <span>搜索字样</span>
-                <button class="settingmenu-button-small" id='saveSearchTitle'>保存</button>
-            </div>
-            <div class="settingmenu-item-vertical-input">
-                <input type="text" id="searchTitle-input" class="settingmenu-input">
-            </div>
+            <div class="settingmenu-item-columns-wrapper">
+                <div class="settingmenu-item-inner-column-1">
+                    <span>搜索字样</span>
+                    <button class="settingmenu-button-small" id='saveSearchTitle'>保存</button>
+                </div>
+                <div class="settingmenu-item-inner-column-2">
+                    <input type="text" id="searchTitle-input" class="settingmenu-input">
+                </div>
+                <div class="settingmenu-item-special-for-slider">
+                    <input type="range" id="fontSizeSlider" min="12" max="256" step="1"  style="width: 300px;" class="settingmenu-slider">
+                    <span id="fontSizeValue" style="min-width: 50px;">64px</span>
+                </div>
+            </div> 
+
+
+            
 
         </div>
         </div>
@@ -451,7 +526,20 @@
                 settingPanel_saveSearchTitle();
             });
             searchTitleInput.value = searchTitleText;
-            
+            const fontSizeSlider = menu.querySelector('#fontSizeSlider');
+            const fontSizeValue = menu.querySelector('#fontSizeValue');
+            let searchTitle_fontSize = localStorage.getItem('searchTitle_fontSize');
+            fontSizeValue.textContent = searchTitle_fontSize + 'px';
+            fontSizeSlider.value = parseInt(searchTitle_fontSize);
+            fontSizeSlider.addEventListener('input', function(e) {
+                const val = e.target.value;
+                fontSizeValue.textContent = val + 'px';
+                updateMainTitle_fontSize(val);
+            });  //拖动时只预览，松手才保存
+            fontSizeSlider.addEventListener('change', function(e) {
+                const val = e.target.value;
+                localStorage.setItem('searchTitle_fontSize', val);
+            });
             
 
             //END
@@ -504,9 +592,7 @@
         //注册动态切换图标
         if (setting_dynamicFavicon === 'true') {
             registerDynamicFavicon();
-        } else {
-            useSimpleGreyFavicon();
-        }
+        } else {  useSimpleGreyFavicon();  }
         function useSimpleGreyFavicon() {
             favicon.href = 'icons/favicon_grey.svg';
         }
@@ -538,6 +624,14 @@
                 searchTitleText = '搜索';
             }
             searchTitle.textContent = searchTitleText;
+            //设置颜色和大小
+            let searchTitle_fontSize = localStorage.getItem('searchTitle_fontSize');
+            if (searchTitle_fontSize == null) {
+               localStorage.setItem('searchTitle_fontSize', '64');
+               searchTitle_fontSize = '64';
+            }
+            searchTitle.style.fontSize = searchTitle_fontSize + 'px';
+
         }
         function updateMainTitle(newTitle) {
             searchTitle.textContent = newTitle;
@@ -546,6 +640,9 @@
         function updateMainTitle(){
             let searchTitleText = localStorage.getItem('searchTitleText');
             searchTitle.textContent = searchTitleText;
+        }
+        function updateMainTitle_fontSize(newFontSize) {
+            searchTitle.style.fontSize = newFontSize + 'px';
         }
 
         //注册底部Slogan
